@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Survey Audio Masjid</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+
+<style>
+body {
+    font-family: 'Poppins', sans-serif;
+    margin:0;
+    background: linear-gradient(135deg,#0f766e,#14b8a6);
+}
+
+/* CONTAINER */
+.container {
+    max-width:700px;
+    margin:40px auto;
+    background:white;
+    padding:30px;
+    border-radius:15px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.2);
+}
+
+/* TITLE */
+h1 {
+    text-align:center;
+    margin-bottom:30px;
+    color:#0f766e;
+}
+
+/* INPUT */
+input, textarea {
+    width:100%;
+    padding:12px;
+    margin-top:10px;
+    border-radius:8px;
+    border:1px solid #ccc;
+    font-size:14px;
+}
+
+/* QUESTION */
+.question {
+    margin-top:25px;
+    font-weight:500;
+}
+
+.options {
+    margin-top:10px;
+    display:flex;
+    gap:20px;
+}
+
+.options label {
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background:#f1f5f9;
+    padding:8px 15px;
+    border-radius:8px;
+    cursor:pointer;
+    transition:0.2s;
+}
+
+.options label:hover {
+    background:#e2e8f0;
+}
+
+.options input {
+    margin:0;
+}
+
+/* STARS */
+.stars {
+    font-size:30px;
+    cursor:pointer;
+    color:#ccc;
+}
+
+.stars span.active,
+.stars span:hover {
+    color:gold;
+}
+
+/* BUTTON */
+button {
+    margin-top:25px;
+    padding:14px;
+    width:100%;
+    border:none;
+    border-radius:10px;
+    background:#0f766e;
+    color:white;
+    font-size:16px;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+button:hover {
+    background:#14b8a6;
+}
+.panel {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 250px;
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    font-size: 14px;
+    z-index: 999;
+}
+
+.panel h2 {
+    font-size: 16px;
+    margin-bottom: 10px;
+    color: #0f766e;
+}
+.panel p {
+    margin: 8px 0;
+}
+#ratingAvg.low {
+    color: #ef4444; /* merah */
+}
+
+#ratingAvg.medium {
+    color: #eab308; /* kuning */
+}
+
+#ratingAvg.high {
+    color: #22c55e; /* hijau */
+}
+#ratingAvg {
+    transition: 0.3s;
+    font-weight: bold;
+}
+
+
+
+
+</style>
+</head>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<body>
+
+<div class="container">
+
+<h1>Survey Kualitas Audio Masjid</h1>
+
+
+<!-- DATA DIRI -->
+<input type="text" placeholder="Nama">
+<input type="text" placeholder="Alamat">
+<input type="number" placeholder="Nomor HP">
+
+<!-- PERTANYAAN -->
+<div class="question">
+1. Apakah suara yang anda dengar berasal dari depan?
+<div class="options">
+<label><input type="radio" name="q1" value="ya"> Ya</label>
+<label><input type="radio" name="q1" value="tidak"> Tidak</label>
+</div>
+</div>
+
+<div class="question">
+2. Apakah anda bisa mendengar pembicara dengan jelas?
+<div class="options">
+<label><input type="radio" name="q2" value="ya"> Ya</label>
+<label><input type="radio" name="q2" value="tidak"> Tidak</label>
+
+</div>
+</div>
+
+<div class="question">
+3. Apakah anda bisa menyimak uraian / penjelasan materi dari pembicara?
+<div class="options">
+<label><input type="radio" name="q3" value="ya"> Ya</label>
+<label><input type="radio" name="q3" value="tidak"> Tidak</label>
+
+</div>
+</div>
+
+<!-- RATING -->
+<div class="question">
+Rating Kepuasan
+<div class="stars" id="stars">
+<span onclick="rate(1)">★</span>
+<span onclick="rate(2)">★</span>
+<span onclick="rate(3)">★</span>
+<span onclick="rate(4)">★</span>
+<span onclick="rate(5)">★</span>
+</div>
+</div>
+
+<!-- SARAN -->
+<div class="question">
+Masukkan Saran (Opsional)
+<textarea rows="4" placeholder="Tulis saran anda..."></textarea>
+</div>
+
+<button onclick="kirim()">Kirim</button>
+
+</div>
+<script type="module">
+
+let nilai = 0;
+
+function rate(n){
+    nilai = n;
+    let stars = document.querySelectorAll("#stars span");
+    stars.forEach((s,i)=>{
+        s.classList.toggle("active", i < n);
+    });
+}
+window.rate = rate;
+
+function kirim(){
+
+    let nama = document.querySelector("input[placeholder='Nama']").value;
+    let alamat = document.querySelector("input[placeholder='Alamat']").value;
+    let hp = document.querySelector("input[placeholder='Nomor HP']").value;
+	let saran = document.querySelector("textarea").value;
+
+    let q1 = document.querySelector("input[name='q1']:checked");
+    let q2 = document.querySelector("input[name='q2']:checked");
+    let q3 = document.querySelector("input[name='q3']:checked");
+
+    if(!nama || !alamat || !hp || !q1 || !q2 || !q3){
+    Swal.fire({
+        icon: "warning",
+        title: "Belum Lengkap 😁",
+        text: "Harap isi semua data dan pertanyaan terlebih dahulu",
+        confirmButtonColor: "#0f766e"
+    });
+    return;
+}
+
+if(nilai === 0){
+    Swal.fire({
+        icon: "warning",
+        title: "Rating belum dipilih 😁",
+        text: "Silakan pilih bintang terlebih dahulu",
+        confirmButtonColor: "#0f766e"
+    });
+    return;
+}
+
+// BARU SUCCESS DI SINI
+Swal.fire({
+    title: "Terima Kasih 🙏",
+    text: "Masukan anda sangat membantu perbaikan audio masjid",
+    icon: "success",
+    confirmButtonColor: "#0f766e"
+});
+
+push(ref(db, "survey"), {
+    nama,
+    alamat,
+    hp,
+    q1: q1.value,
+    q2: q2.value,
+    q3: q3.value,
+    rating: nilai,
+    saran: saran, // ✅ INI YANG KURANG
+    waktu: Date.now()
+});
+document.querySelectorAll("input[type='radio']").forEach(r => r.checked = false);
+document.querySelectorAll("input[type='text'], input[type='number']").forEach(i => i.value = "");
+document.querySelector("textarea").value = "";
+nilai = 0;
+document.querySelectorAll("#stars span").forEach(s => s.classList.remove("active"));
+}
+window.kirim = kirim;
+function loadData(){
+
+    onValue(ref(db, "survey"), (snapshot) => {
+        let data = snapshot.val();
+        if(!data) return;
+
+        let arr = Object.values(data);
+        let total = arr.length;
+
+        let totalRating = 0;
+
+        arr.forEach(d=>{
+            totalRating += d.rating;
+        });
+
+        let avg = (totalRating / total).toFixed(1);
+		let ratingEl = document.getElementById("ratingAvg");
+
+// reset class dulu
+ratingEl.classList.remove("low", "medium", "high");
+
+// tentukan warna
+if(avg <= 2){
+    ratingEl.classList.add("low");
+}else if(avg <= 3){
+    ratingEl.classList.add("medium");
+}else{
+    ratingEl.classList.add("high");
+}
+
+        animateValue("ratingAvg", avg, "");
+    });
+
+}
+function animateValue(id, value, suffix){
+    let el = document.getElementById(id);
+    let start = 0;
+    let end = parseFloat(value);
+    let duration = 500;
+    let startTime = null;
+
+    function animation(currentTime){
+        if(!startTime) startTime = currentTime;
+        let progress = Math.min((currentTime - startTime) / duration, 1);
+        let val = start + (end - start) * progress;
+        el.innerText = val.toFixed(1) + suffix;
+
+        if(progress < 1){
+            requestAnimationFrame(animation);
+        }
+    }
+
+    requestAnimationFrame(animation);
+}
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+const firebaseConfig = {
+  apiKey: "AIzaSyCsyPcWbiWzZGCemmEGL38b9jn-kw1pnSQ",
+  authDomain: "service-elektronik-78ae1.firebaseapp.com",
+  projectId: "service-elektronik-78ae1",
+  databaseURL: "https://service-elektronik-78ae1-default-rtdb.asia-southeast1.firebasedatabase.app/", // ✅ koma di sini
+  storageBucket: "service-elektronik-78ae1.firebasestorage.app",
+  messagingSenderId: "954366027748",
+  appId: "1:954366027748:web:ef857286ea7d5e66d889f1"
+};
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+loadData();
+
+
+
+
+</script>
+
+</body>
+</html>
